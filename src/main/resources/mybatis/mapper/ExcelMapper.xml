@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sits.rjb.excel.mapper.ExcelMapper">
+    <resultMap id="DownloadCandidateInfoMapper" type="cn.sits.rjb.excel.model.dto.DownloadCandidateInfoByKeywordResponseDto">
+        <result column="candidate_id" property="candidateId" jdbcType="INTEGER"/>
+        <result column="candidate_name" property="candidateName" jdbcType="VARCHAR"/>
+        <result column="telephone" property="telephone" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="company_now" property="companyNow" jdbcType="VARCHAR"/>
+        <result column="company_before" property="companyBefore" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--模糊查询候选人信息-->
+    <select id="downloadCandidateListExcel" resultMap="DownloadCandidateInfoMapper"
+            parameterType="cn.sits.rjb.excel.model.dto.DownloadCandidateListExcelRequestDto">
+        SELECT * FROM candidate_info t1
+        where is_delete = 0
+        <if test="keyword !=null and keyword !=''">
+            AND (t1.candidate_name like '%'||#{keyword}||'%'
+            OR t1.telephone like '%'||#{keyword}||'%'
+            OR t1.company_now like '%'||#{keyword}||'%'
+            OR t1.company_before like '%'||#{keyword}||'%')
+        </if>
+        ORDER BY t1.update_time desc
+    </select>
+</mapper>
