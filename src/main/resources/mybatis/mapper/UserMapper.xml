@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sits.rjb.system.mapper.UserMapper">
+    <resultMap id="UserResultMapper" type="cn.sits.rjb.system.model.po.SysUser">
+        <result column="user_id" property="userCode" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="password" property="passWord" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findByUserCodeAndActive" parameterType="java.lang.String" resultMap="UserResultMapper">
+        SELECT *
+        FROM user_info t1
+        where 1=1
+        <if test="userCode !=null">
+            and t1.user_name = #{userCode}
+        </if>
+    </select>
+
+</mapper>
