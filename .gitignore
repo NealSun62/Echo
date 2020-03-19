@@ -10,3 +10,4 @@ gen
 .gitignore
 .idea/workspace.xml
 target/
+/src/main/resources/application-prod.properties
