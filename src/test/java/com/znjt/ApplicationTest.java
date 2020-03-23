@@ -1,20 +1,10 @@
 package com.znjt;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.time.LocalDate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,9 +19,15 @@ public class ApplicationTest {
     }
 
     public static void main(String[] args) {
-        long n = 105;
-        long result = trailingZeros(n);
-        System.out.println("result = " + result);
+        LocalDate today = LocalDate.now();
+        boolean a = today.isLeapYear();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        int day = today.getDayOfMonth();
+        System.out.println(a);
+        System.out.println("year:"+year);
+        System.out.println("month:"+month);
+        System.out.println("day:"+day);
     }
 
 }
