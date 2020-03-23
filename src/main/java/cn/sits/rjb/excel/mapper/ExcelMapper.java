@@ -15,4 +15,5 @@ import java.util.List;
 @Mapper
 public interface ExcelMapper {
     List downloadCandidateListExcel(DownloadCandidateListExcelRequestDto requestDto);
+    int addCandidateListExcel(List candidateLists);
 }

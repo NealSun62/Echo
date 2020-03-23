@@ -2,23 +2,243 @@ package cn.sits.rjb.common.utils;
 
 import jodd.util.StringUtil;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
 public class ExcelUtils {
+    private static String EXCEL_XLS = ".xls";
+    private static String XLS = ".xls";
+    private static String EXCEL_XLSX = ".xlsx";
+    private static String XLSX = ".xlsx";
+    /**
+     * 导出excel
+     *
+     * @param response
+     * @param header
+     * @param dataList
+     * @throws Exception
+     */
+    public static void exportExcel(HttpServletResponse response, List<String> header, List<List<String>> dataList) throws Exception {
+        exportExcel(response, "主标题", "副标题", header, dataList);
+    }
 
+    /**
+     * 导出excel
+     *
+     * @param response
+     * @param title
+     * @param subheading
+     * @param header
+     * @param dataList
+     * @throws Exception
+     */
+    public static void exportExcel(HttpServletResponse response, String title, String subheading, List<String> header, List<List<String>> dataList) throws Exception {
+        //获取一个HSSFWorkbook对象
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFCellStyle style = getHSSFCellStyle(workbook);
+        //创建一个sheet
+        HSSFSheet sheet = workbook.createSheet("Sheet1");
+        //创建一个标题行
+        CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 0, 0, header.size());
+        //创建一个副标题行
+        CellRangeAddress cellRangeAddress2 = new CellRangeAddress(1, 1, 0, header.size());
+        sheet.addMergedRegion(cellRangeAddress);
+        sheet.addMergedRegion(cellRangeAddress2);
+
+        //标题，居中
+        HSSFRow row0 = sheet.createRow(0);
+        HSSFCell cell0 = row0.createCell(0);
+        cell0.setCellValue(title);
+        cell0.setCellStyle(style);
+        // 第一行
+        HSSFRow row1 = sheet.createRow(1);
+        HSSFCell cell1 = row1.createCell(0);
+        //副标题
+        cell1.setCellValue(subheading);
+        cell1.setCellStyle(style);
+
+        //表头
+        HSSFRow row = sheet.createRow(2);
+
+        HSSFCell cell = null;
+        for (int i = 0; i < header.size(); i++) {
+            cell = row.createCell(i);
+            cell.setCellValue(header.get(i));
+            cell.setCellStyle(style);
+        }
+
+        //数据
+        for (int i = 0; i < dataList.size(); i++) {
+            row = sheet.createRow(i + 3);
+            for (int j = 0; j < dataList.get(i).size(); j++) {
+                row.createCell(j).setCellValue(dataList.get(i).get(j));
+            }
+        }
+
+        OutputStream outputStream = response.getOutputStream();
+        //设置页面不缓存
+        response.reset();
+        String filename = title;
+        //设置返回文件名的编码格式
+        response.setCharacterEncoding("utf-8");
+        filename = URLEncoder.encode(filename, "utf-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+        response.setContentType("application/msexcel");
+        workbook.write(outputStream);
+        outputStream.close();
+    }
+
+    /**
+     * 导入数据（单页）
+     *
+     * @param file        文件
+     * @param sheetIndex  页名的索引(从0开始，-1代表全部页)
+     * @param headerIndex 表头的索引（用于获取共多少列以及第几行开始读数据）
+     * @return
+     * @throws IOException
+     */
+    public static List<List<Object>> importExcel(MultipartFile file, int sheetIndex, int headerIndex) throws Exception {
+        Workbook workbook = null;
+        //返回的data
+        List<List<Object>> data = new ArrayList<>();
+        workbook = getWorkbook(file);
+        //导入某一页
+        if (sheetIndex != -1 && sheetIndex > -1) {
+            Sheet sheet = workbook.getSheetAt(sheetIndex);
+            List<List<Object>> lists = importOneSheet(sheet, headerIndex);
+            data.addAll(lists);
+        } else {
+            //导入全部
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                if (sheet == null) {
+                    continue;
+                }
+                List<List<Object>> lists = importOneSheet(sheet, headerIndex);
+                data.addAll(lists);
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 导入数据（所有页）
+     *
+     * @param file        文件
+     * @param headerIndex 表头的索引（用于获取共多少列以及第几行开始读数据）
+     * @return
+     * @throws IOException
+     */
+    public static List<List<Object>> importExcel(MultipartFile file, int headerIndex) throws Exception {
+        return importExcel(file, -1, headerIndex);
+    }
+
+    /**
+     * 创建一个style
+     *
+     * @param workbook
+     * @return
+     */
+    private static HSSFCellStyle getHSSFCellStyle(HSSFWorkbook workbook) {
+        HSSFCellStyle style = workbook.createCellStyle();
+        //居中
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        return style;
+    }
+
+
+    /**
+     * 获取一个sheet里的数据
+     *
+     * @param sheet
+     * @param headerIndex
+     * @return
+     * @throws Exception
+     */
+    private static List<List<Object>> importOneSheet(Sheet sheet, int headerIndex) throws Exception {
+        List<List<Object>> data = new ArrayList<>();
+        int row = sheet.getLastRowNum();
+        //row = -1 表格中没有数据
+        //row = headerIndex 表格中表头以下没有数据（指没有有用数据）
+        if (row == -1 || row == headerIndex) {
+            throw new Exception("表格中没有有用数据!");
+        }
+        //通过表头获取共多少列
+        int coloumNum = sheet.getRow(headerIndex).getPhysicalNumberOfCells();
+        //从表头下一行开始取数据
+        for (int i = headerIndex + 1; i <= row; i++) {
+            Row row1 = sheet.getRow(i);
+            List<Object> list = new ArrayList<>();
+            if (row1 != null) {
+                for (int j = 0; j < coloumNum; j++) {
+                    list.add(getCellValue(row1.getCell(j)));
+                }
+            }
+            data.add(list);
+        }
+        return data;
+    }
+
+    /**
+     * 获取workbook
+     *
+     * @return
+     */
+    private static Workbook getWorkbook(MultipartFile file) throws Exception {
+        Workbook workbook = null;
+        //获取文件名
+        String fileName = file.getOriginalFilename();
+        //判断文件格式
+        if (fileName.endsWith(XLS)) {
+            workbook = new HSSFWorkbook(file.getInputStream());
+        } else if (fileName.endsWith(XLSX)) {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } else {
+            throw new Exception("文件格式有误!");
+        }
+        return workbook;
+    }
+
+
+    /**
+     * 获取单元格的值
+     *
+     * @param cell
+     * @return
+     */
+    private static String getCellValue(Cell cell) {
+        String cellValue = "";
+        DecimalFormat df = new DecimalFormat("#");
+        switch (cell.getCellType()) {
+            case HSSFCell.CELL_TYPE_STRING:
+                cellValue = cell.getRichStringCellValue().getString().trim();
+                break;
+            case HSSFCell.CELL_TYPE_NUMERIC:
+                cellValue = df.format(cell.getNumericCellValue()).toString();
+                break;
+            case HSSFCell.CELL_TYPE_BOOLEAN:
+                cellValue = String.valueOf(cell.getBooleanCellValue()).trim();
+                break;
+            case HSSFCell.CELL_TYPE_FORMULA:
+                cellValue = cell.getCellFormula();
+                break;
+            default:
+                cellValue = "";
+        }
+        return cellValue.trim();
+    }
     /**
      *
      * @Title: createExcelFile
@@ -716,5 +936,91 @@ public class ExcelUtils {
         Date strtodate = formatter.parse(strDate, pos);
         return strtodate;
     }
+    public static String importExcel(String filePath) throws Exception {
+        //判断文件
+        if (filePath != null && !"".equals(filePath)) {
+            File file = new File(filePath);
+            //判断格式
+            if (file.getName().endsWith(EXCEL_XLS) || file.getName().endsWith(EXCEL_XLSX)) {
+                //创建输入流对象
+                InputStream is = new FileInputStream(file);
+                Workbook workbook = null;
+                //判断excel版本号
+                if (file.getName().endsWith(EXCEL_XLS)) {
+                    workbook = new HSSFWorkbook(is);
+                } else if (file.getName().endsWith(EXCEL_XLSX)) {
+                    workbook = new XSSFWorkbook(is);
+                }
+                Map<String, Object> objectMap=new HashMap<>();
+                //循环表格（sheet）
+                for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                    Sheet sheet = workbook.getSheetAt(i);
+                    //判断sheet是否有数据
+                    if (sheet.getPhysicalNumberOfRows() <= 0) {
+                        continue;
+                    }
+                    //存放集合
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    //存放表头名字（第一行的数据）
+                    List<String> header = new ArrayList<>();
+                    for (int x = 0; x < sheet.getRow(0).getLastCellNum(); x++) {
+                        Cell cell = sheet.getRow(0).getCell(x);
+                        String value = cell.getStringCellValue();
+                        header.add(value);
+                    }
 
+                    //获取行并进行循环
+                    for (int j = 1; j <= sheet.getLastRowNum(); j++) {
+                        Row row = sheet.getRow(j);
+                        //判断row是否有数据
+                        if (row.getPhysicalNumberOfCells() <= 0) {
+                            continue;
+                        }
+                        //存放数据
+                        Map<String, Object> map = new HashMap<>();
+                        //获取单元格并进行循环
+                        for (int k = 0; k < row.getLastCellNum(); k++) {
+                            Cell cell = row.getCell(k);
+                            if (cell == null || cell.toString().trim().equals("")) {
+                                continue;
+                            }
+                            CellType cellType = cell.getCellTypeEnum();
+                            //存放值
+                            String cellValue = "";
+                            //字符串
+                            if (cellType == CellType.STRING) {
+                                cellValue = cell.getStringCellValue().trim();
+                                cellValue = io.netty.util.internal.StringUtil.isNullOrEmpty(cellValue) ? "" : cellValue;
+                            }
+                            //数据格式
+                            if (cellType == CellType.NUMERIC) {
+                                //判断日期类型
+                                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                                    SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                    String date1 = dff.format(cell.getDateCellValue());
+                                    cellValue = date1;
+                                } else {
+                                    //设置数据格式（"#.######"是几位小数）
+                                    cellValue = new DecimalFormat("#.######").format(cell.getNumericCellValue());
+                                }
+                            }
+                            if (cellType == CellType.BOOLEAN) {
+                                cellValue = String.valueOf(cell.getBooleanCellValue());
+                            }
+                            //添加数据到map
+                            map.put(header.get(k), cellValue);
+                        }
+                        //把map数据添加到list
+                        list.add(map);
+                    }
+                    objectMap.put(sheet.getSheetName(),list);
+                }
+                return objectMap.toString();
+            } else {
+                return "文件不是excel";
+            }
+        } else {
+            return "文件不存在";
+        }
+    }
 }

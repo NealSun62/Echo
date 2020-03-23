@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.sits.rjb.excel.mapper.ExcelMapper">
-    <resultMap id="DownloadCandidateInfoMapper" type="cn.sits.rjb.excel.model.dto.DownloadCandidateInfoByKeywordResponseDto">
+    <resultMap id="DownloadCandidateInfoMapper"
+               type="cn.sits.rjb.excel.model.dto.DownloadCandidateInfoByKeywordResponseDto">
         <result column="candidate_id" property="candidateId" jdbcType="INTEGER"/>
         <result column="candidate_name" property="candidateName" jdbcType="VARCHAR"/>
         <result column="telephone" property="telephone" jdbcType="VARCHAR"/>
@@ -23,4 +24,17 @@
         </if>
         ORDER BY t1.update_time desc
     </select>
+
+    <!--插入Excel候选人信息-->
+    <insert id="addCandidateListExcel" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="uuid">
+        insert into candidate_info(candidate_name,telephone,description,company_now,company_before)values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.candidateName,jdbcType=VARCHAR},#{item.telephone,jdbcType=VARCHAR},
+            #{item.description,jdbcType=VARCHAR},#{item.companyNow,jdbcType=VARCHAR},
+            #{item.companyBefore,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
 </mapper>
