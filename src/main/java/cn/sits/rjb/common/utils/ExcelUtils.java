@@ -1,6 +1,6 @@
 package cn.sits.rjb.common.utils;
 
-import jodd.util.StringUtil;
+import com.alibaba.druid.util.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -263,7 +263,7 @@ public class ExcelUtils {
     public static HSSFWorkbook createExcelFile(String fileName,
                                                List<String> heads) {
         HSSFWorkbook wb = new HSSFWorkbook();
-        if (StringUtil.isEmpty(fileName) || null == heads) {
+        if (StringUtils.isEmpty(fileName) || null == heads) {
             return null;
         } else {
             HSSFSheet sheet = wb.createSheet(fileName);
@@ -291,7 +291,7 @@ public class ExcelUtils {
      */
     public static Workbook createExcelFile(String fileName, List<String> heads, List<List<String>> dataList) {
         Workbook wb = new XSSFWorkbook();
-        if (StringUtil.isEmpty(fileName) || null == heads || null == dataList) {
+        if (StringUtils.isEmpty(fileName) || null == heads || null == dataList) {
             return null;
         } else {
             Sheet sheet = wb.createSheet(fileName);
@@ -384,7 +384,7 @@ public class ExcelUtils {
         List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
         Map<String, Integer> headMap = new HashMap<String, Integer>();
         if (null == convertMap || convertMap.size() == 0
-                || StringUtil.isEmpty(filePath)) {
+                || StringUtils.isEmpty(filePath)) {
             return dataList;
         } else {
             InputStream input = new FileInputStream(filePath); // 建立输入流
@@ -444,7 +444,7 @@ public class ExcelUtils {
         List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
         Map<String, Integer> headMap = new HashMap<String, Integer>();
         if (null == convertMap || convertMap.size() == 0
-                || StringUtil.isEmpty(filePath)) {
+                || StringUtils.isEmpty(filePath)) {
             return dataList;
         } else {
             InputStream input = new FileInputStream(filePath); // 建立输入流
@@ -515,7 +515,7 @@ public class ExcelUtils {
         List<T> objects = new ArrayList<T>(); // 返回结果集
         Map<String, Integer> indexHashMap = new HashMap<String, Integer>(); // 定位excel头文件cell位置
         if (null == convertMap || convertMap.size() == 0
-                || StringUtil.isEmpty(fileName)) {
+                || StringUtils.isEmpty(fileName)) {
             return objects;
         } else {
             InputStream input = new FileInputStream(fileName); // 建立输入流
@@ -848,7 +848,7 @@ public class ExcelUtils {
     public static HSSFWorkbook fillExcelWithSheetInfo(HSSFWorkbook workbook,
                                                       int sheetNum, String sheetTitle, List<String> heads,
                                                       List<List<String>> dataList) throws IOException {
-        if (StringUtil.isEmpty(sheetTitle) || null == heads
+        if (StringUtils.isEmpty(sheetTitle) || null == heads
                 || null == dataList || workbook == null) {
             return null;
         } else {

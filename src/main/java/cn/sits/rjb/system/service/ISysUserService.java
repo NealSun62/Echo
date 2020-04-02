@@ -1,7 +1,10 @@
 package cn.sits.rjb.system.service;
 
 import cn.sits.rjb.common.data.ResponseData;
-import cn.sits.rjb.system.model.po.SysUser;
+import cn.sits.rjb.system.model.dto.LoginUserResponseDto;
+import cn.sits.rjb.system.model.dto.LoginUserResquestDto;
+
+import java.util.List;
 
 /**
  * @author Neal.Sun
@@ -10,7 +13,7 @@ import cn.sits.rjb.system.model.po.SysUser;
  * @date 2020/02/13 16:46
  */
 public interface ISysUserService {
-    SysUser findBySysUserCode(String userCode);
+    List<LoginUserResponseDto> findByLoginName(LoginUserResquestDto resquestDto) throws Exception;
 
     ResponseData login(String userName, String password) throws Exception;
 }

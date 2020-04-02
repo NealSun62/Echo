@@ -7,8 +7,8 @@ import cn.sits.rjb.excel.mapper.ExcelMapper;
 import cn.sits.rjb.excel.model.dto.DownloadCandidateInfoByKeywordResponseDto;
 import cn.sits.rjb.excel.model.dto.DownloadCandidateListExcelRequestDto;
 import cn.sits.rjb.excel.service.IExcelService;
+import com.alibaba.druid.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
-import jodd.util.StringUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class DownloadController {
             heads.add("先公司");
             heads.add("前公司");
             DownloadCandidateListExcelRequestDto requestDto = new DownloadCandidateListExcelRequestDto();
-            if (StringUtil.isEmpty(keyword)) {
+            if (StringUtils.isEmpty(keyword)) {
                 requestDto.setKeyword("");
             } else {
                 requestDto.setKeyword(keyword.trim());

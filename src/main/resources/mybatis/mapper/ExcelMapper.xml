@@ -27,13 +27,22 @@
 
     <!--插入Excel候选人信息-->
     <insert id="addCandidateListExcel" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="uuid">
-        insert into candidate_info(candidate_name,telephone,description,company_now,company_before)values
-        <foreach collection="list" item="item" index="index" separator=",">
+        <foreach collection="list" item="item" index="index" separator=";">
+            INSERT INTO candidate_info ( candidate_name, telephone, description, company_now, company_before )
+            VALUES
             (
             #{item.candidateName,jdbcType=VARCHAR},#{item.telephone,jdbcType=VARCHAR},
             #{item.description,jdbcType=VARCHAR},#{item.companyNow,jdbcType=VARCHAR},
             #{item.companyBefore,jdbcType=VARCHAR}
             )
+            ON conflict ( telephone ) DO
+            UPDATE
+            SET
+            candidate_name =#{item.candidateName,jdbcType=VARCHAR},
+            description = #{item.description,jdbcType=VARCHAR},
+            company_now = #{item.companyNow,jdbcType=VARCHAR},
+            company_before = #{item.companyBefore,jdbcType=VARCHAR},
+            update_time = cast (current_timestamp(0) as  timestamp without time zone)
         </foreach>
     </insert>
 

@@ -7,7 +7,7 @@ import cn.sits.rjb.candidate.model.vo.GetCandidateInfoByKeywordVo;
 import cn.sits.rjb.candidate.service.ICandidateInfoService;
 import cn.sits.rjb.common.utils.PageUtil;
 import cn.sits.rjb.constants.Constants;
-import jodd.util.StringUtil;
+import com.alibaba.druid.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -39,7 +39,7 @@ public class CandidateInfoServiceImpl implements ICandidateInfoService {
         logger.info("getCandidateInfoByKeyword is Begin");
         GetCandidateInfoByKeywordResponseDto getCandidateInfoByKeywordResponseDto = new GetCandidateInfoByKeywordResponseDto();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(StringUtil.isEmpty(requestDto.getKeyword())) {
+        if(StringUtils.isEmpty(requestDto.getKeyword())) {
             requestDto.setKeyword("");
         }else{
             requestDto.setKeyword(requestDto.getKeyword().trim());

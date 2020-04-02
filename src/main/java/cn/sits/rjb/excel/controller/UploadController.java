@@ -42,12 +42,13 @@ public class UploadController {
             candidateListExcel = ExcelUtils.importExcel(file, 0,0);
             if(candidateListExcel.size()>0){
                 int candidateListNumber = iExcelService.importCandidateListExcel(candidateListExcel);
-                responseData =  new ResponseData("导入"+candidateListNumber+"条数据",ResponseCodeEnum.SUCCESS.getCode(), "候选人信息导入成功");
+                responseData =  new ResponseData("导入数据成功",ResponseCodeEnum.SUCCESS.getCode(), "候选人信息导入成功");
             }else {
                 return new ResponseData(ResponseCodeEnum.COMMON_ERROR_100.getCode(), "候选人信息导入失败。数据可能为空或格式异常");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseData(ResponseCodeEnum.COMMON_ERROR_100.getCode(), "候选人信息导入失败。数据可能为空或格式异常");
         }
         return responseData;
     }

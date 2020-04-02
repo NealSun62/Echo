@@ -8,6 +8,9 @@
 		<property name="REC" value="ROOT"/>
 		<property name="ROOT" value="ROOT"/>
 	</properties>
+	<settings>
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
 	<typeAliases>
 		<typeAlias alias="Integer" type="java.lang.Integer" />
 		<typeAlias alias="Long" type="java.lang.Long" />

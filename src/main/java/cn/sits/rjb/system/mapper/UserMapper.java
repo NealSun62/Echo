@@ -1,10 +1,12 @@
 package cn.sits.rjb.system.mapper;
 
-import cn.sits.rjb.system.model.po.SysUser;
+import cn.sits.rjb.system.model.dto.LoginUserResponseDto;
+import cn.sits.rjb.system.model.dto.LoginUserResquestDto;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
-    SysUser findByUserCodeAndActive(@Param("userCode")String userCode);
+    List<LoginUserResponseDto> findByLoginName(LoginUserResquestDto resquestDto);
 }
