@@ -1,7 +1,5 @@
 package cn.sits.rjb.candidate.model.dto;
 
-import cn.sits.rjb.common.data.PageResponseDto;
-
 import java.sql.Timestamp;
 
 /**
@@ -20,6 +18,15 @@ public class GetCandidateInfoByKeywordResponseDto {
     private Timestamp updateTime;
     private String companyNow;
     private String companyBefore;
+    private String post;
+
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
 
     public int getCandidateId() {
         return candidateId;

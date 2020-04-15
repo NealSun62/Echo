@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -28,6 +30,7 @@ public class ExcelServiceImpl implements IExcelService {
     @Resource
     ExcelMapper excelMapper;
 
+    @Transactional(propagation= Propagation.REQUIRED)
     @Override
     public int importCandidateListExcel(List<List<Object>> candidateListExcel) throws Exception {
         int result = 0;
@@ -40,10 +43,14 @@ public class ExcelServiceImpl implements IExcelService {
                 candidateExcelInfo.setDescription(candidateList.get(2).toString());
                 candidateExcelInfo.setCompanyNow(candidateList.get(3).toString());
                 candidateExcelInfo.setCompanyBefore(candidateList.get(4).toString());
+                candidateExcelInfo.setPost(candidateList.get(5).toString());
                 candidateLists.add(candidateExcelInfo);
             }
             if (candidateLists.size() > 0) {
                 result = excelMapper.addCandidateListExcel(candidateLists);
+            }
+            if (true) {
+                throw new Exception();
             }
         } catch (Exception e) {
             e.printStackTrace();

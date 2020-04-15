@@ -1,0 +1,1 @@
+2020-04-01 14:24:03 [cn.sits.rjb.map.service.impl.MapServiceImpl:251] - 异常详情:nested exception is org.apache.ibatis.binding.BindingException: Parameter 'policeIds' not found. Available parameters are [collection, list]

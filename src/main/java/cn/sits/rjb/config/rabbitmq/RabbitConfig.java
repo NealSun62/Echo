@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @Author neal
  */
-@Configuration // 相当于xml配置文件
+@Configuration
 public class RabbitConfig {
     // 队列名称
     public final static String QUEUE = "test_queue";

@@ -15,7 +15,15 @@ public class CandidateExcelInfo {
     private String description;
     private String companyNow;
     private String companyBefore;
-    
+    private String post;
+
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
 
     public String getCandidateName() {
         return candidateName;

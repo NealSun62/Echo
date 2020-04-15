@@ -3,7 +3,6 @@ package cn.sits.rjb.excel.controller;
 import cn.sits.rjb.common.data.ResponseData;
 import cn.sits.rjb.common.enums.ResponseCodeEnum;
 import cn.sits.rjb.common.utils.ExcelUtils;
-import cn.sits.rjb.excel.mapper.ExcelMapper;
 import cn.sits.rjb.excel.model.po.CandidateExcelInfo;
 import cn.sits.rjb.excel.service.IExcelService;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
@@ -30,10 +28,8 @@ public class UploadController {
     @Autowired
     IExcelService iExcelService;
 
-    @Resource
-    ExcelMapper excelMapper;
-
     @RequestMapping(value = "/importCandidateListExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "候选人信息的导入", notes = "文件导入")
     @ResponseBody
     public ResponseData importCandidateListExcel(MultipartFile file) {
         List<List<Object>> candidateListExcel = null;
@@ -54,12 +50,12 @@ public class UploadController {
     }
 
     /**
-     * 导出候选人列表Excel
+     * 候选人信息的本地导入
      */
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = "/uploadCandidateListExcel", method = RequestMethod.GET)
-    @ApiOperation(value = "候选人信息的导入", notes = "根据条件进行候选人信息的导入")
-    public ResponseData downloadCarsListExcel(HttpServletRequest request,
+    @ApiOperation(value = "候选人信息的本地导入", notes = "本地导入")
+    public ResponseData uploadCandidateListExcel(HttpServletRequest request,
                                               HttpServletResponse response, String excelPath) {
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

@@ -10,6 +10,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="company_now" property="companyNow" jdbcType="VARCHAR"/>
         <result column="company_before" property="companyBefore" jdbcType="VARCHAR"/>
+        <result column="post" property="post" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--模糊查询候选人信息数量-->
@@ -35,6 +36,7 @@
             AND (t1.candidate_name like '%'||#{keyword}||'%'
             OR t1.telephone like '%'||#{keyword}||'%'
             OR t1.company_now like '%'||#{keyword}||'%'
+            OR t1.post like '%'||#{keyword}||'%'
             OR t1.company_before like '%'||#{keyword}||'%')
         </if>
         ORDER BY t1.update_time desc
