@@ -10,6 +10,7 @@ public final class Constants {
     public static final String STATUSCODE_FAILED = "128";
     /** 无操作 */
     public static final String STATUSCODE_NOTFOUND = "256";
+    public static final String AUTHORIZATION = "AUTHORIZATION";
 
     /** 删除标识*/
     /** 未删除 */

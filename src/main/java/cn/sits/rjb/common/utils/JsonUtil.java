@@ -1,50 +1,122 @@
 package cn.sits.rjb.common.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Map;
 
-public class JsonUtil {
-
+/**
+ * JSON 工具类
+ * 
+ * @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)在类上加
+ * @author louis.lu
+ * @since 1.0.0
+ */
+public final class JsonUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String convertObj2String(Object object) {
-        String s = null;
-        try {
-            s = objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return s;
+    private JsonUtil() {
     }
 
-    public static <T> T convertString2Obj(String s, Class<T> clazz) {
-        T t = null;
-        try {
-            t = objectMapper.readValue(s, clazz);
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * 将 POJO 对象转为 JSON 字符串
+     */
+    public static <T> String toJson(T pojo) {
+        String json = null;
+
+        if (pojo != null) {
+            try {
+                json = objectMapper.writeValueAsString(pojo);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        return t;
+        return json;
     }
 
-    public static <T> T stringToJson(String s , Class<T> tClass){
-        T t = null;
+    /**
+     * 将 JSON 字符串转为 POJO 对象
+     */
+    public static <T> T fromJson(String json, Class<T> type) {
+        T pojo = null;
+
+        if (json != null && !json.isEmpty()) {
+            try {
+                pojo = objectMapper.readValue(json, type);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return pojo;
+    }
+
+    /**
+     * json数组转List
+     * 
+     * List<UserBean> jsonToUserBeans = JacksonUtil.readValue(listToJson, new TypeReference<List<UserBean>>() {
+     * 
+     * @param json
+     * @param valueTypeRef
+     * @return
+     */
+    public static <T> T fromJsonToList(String json, TypeReference<T> valueTypeRef) {
+        T list = null;
+
         try {
-            t = JSON.parseObject(s , tClass);
+            list = objectMapper.readValue(json, valueTypeRef);
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException(e);
         }
-        return t;
-    }
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        ConcurrentHashMap<Object, Boolean> map = new ConcurrentHashMap<>(16);
-        return t -> map.putIfAbsent(keyExtractor.apply(t),Boolean.TRUE) == null;
+
+        return list;
     }
 
+    /**
+     * json转map
+     * 
+     * @param json
+     * @return
+     *
+     * @author louis.lu
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Map<String, Map<String, Object>> fromJsonToMap(String json) {
+        Map<String, Map<String, Object>> map = null;
+
+        try {
+            map = objectMapper.readValue(json, Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return map;
+    }
+
+    /**
+     * json字符串转TreeNode
+     * 
+     * @param json
+     * @return
+     *
+     * @author louis.lu
+     */
+    public static <T> JsonNode fromJsonToTreeNode(String json) {
+        JsonNode node = null;
+        try {
+            node = objectMapper.readTree(json);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return node;
+    }
+
+    // public static void main(String[] args) {
+    //     String json = "{\"error\":0,\"data\":{\"name\":\"ABC\",\"age\":20,\"phone\":{\"home\":\"abc\",\"mobile\":\"def\"},\"friends\":[{\"name\":\"DEF\",\"phone\":{\"home\":\"hij\",\"mobile\":\"klm\"}},{\"name\":\"GHI\",\"phone\":{\"home\":\"nop\",\"mobile\":\"qrs\"}}]},\"other\":{\"nickname\":[]}}";
+    //     Map<String, Map<String, Object>> map = fromJsonToMap(json);
+    //
+    //     for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
+    //         System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+    //     }
+    // }
 }

@@ -1,5 +1,6 @@
 package cn.sits.rjb.excel.controller;
 
+import cn.sits.rjb.common.aop.AccessLimit;
 import cn.sits.rjb.common.data.ResponseData;
 import cn.sits.rjb.common.enums.ResponseCodeEnum;
 import cn.sits.rjb.common.utils.ExcelUtils;
@@ -41,6 +42,7 @@ public class DownloadController {
      * 导出候选人列表Excel
      */
     @SuppressWarnings("rawtypes")
+    @AccessLimit(limit = 4,sec = 10)//10秒内4次
     @RequestMapping(value = "/downloadCandidateListExcel", method = RequestMethod.GET)
     @ApiOperation(value = "候选人信息的导出", notes = "根据条件进行候选人信息的导出")
     public ResponseData downloadCarsListExcel(HttpServletRequest request,

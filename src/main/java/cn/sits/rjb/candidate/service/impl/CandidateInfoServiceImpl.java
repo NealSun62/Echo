@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,23 +43,7 @@ public class CandidateInfoServiceImpl implements ICandidateInfoService {
         }else{
             requestDto.setKeyword(requestDto.getKeyword().trim());
         }
-        //默认没传参数的话，只查七天前的数据
-//        if(requestDto.getEndTime() == null &&
-//                requestDto.getStartTime() == null &&
-//                StringUtil.isEmpty(requestDto.getKeyword()) &&
-//                requestDto.getOverRate() == null){
-//            Calendar can = Calendar.getInstance();
-//            can.add(Calendar.DATE, -7);
-//            Calendar can2 = Calendar.getInstance();
-//            can2.add(Calendar.DATE, +1);
-//            Date date = can.getTime();
-//            Date date2 = can2.getTime();
-//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//            Timestamp ts = new Timestamp(date.getTime());
-//            Timestamp ts2 = new Timestamp(date2.getTime());
-//            requestDto.setStartTime(ts);
-//            requestDto.setEndTime(ts2);
-//        }
+
         Integer pageNum = Constants.DEFAULT_PAGE_INDEX + 1;
         Integer pageSize = Constants.DEFAULT_PAGE_SIZE;
 
@@ -75,20 +58,13 @@ public class CandidateInfoServiceImpl implements ICandidateInfoService {
         requestDto.setPageNum(pageNum);
         requestDto.setPageSize(pageSize);
         requestDto.setOffset(offset);
-        //传递String类型时间
-//        String startTimeString = sdf.format(requestDto.getStartTime());
-//        String endTimeString = sdf.format(requestDto.getEndTime());
-//        requestDto.setStartTimeString(startTimeString);
-//        requestDto.setEndTimeString(endTimeString);
-//
         Integer count = candidateInfoMapper.queryCandidateInfoListCount(requestDto);
         int totalPage = PageUtil.getTotalPage(count,pageSize);
         getCandidateInfoByKeywordVo.setTotalPage(totalPage);
         getCandidateInfoByKeywordVo.setTotalSize(count);
 
         try {
-            List<GetCandidateInfoByKeywordResponseDto> candidateInfoList = new ArrayList<GetCandidateInfoByKeywordResponseDto>();
-            candidateInfoList = candidateInfoMapper.getCandidateInfoByKeyword(requestDto);
+            List<GetCandidateInfoByKeywordResponseDto> candidateInfoList = candidateInfoMapper.getCandidateInfoByKeyword(requestDto);
             getCandidateInfoByKeywordVo.setCandidateInfoList(candidateInfoList);
         } catch(Exception e) {
             logger.info(e.getMessage());

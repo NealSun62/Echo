@@ -5,6 +5,9 @@ import cn.sits.rjb.candidate.model.vo.GetCandidateInfoByKeywordVo;
 import cn.sits.rjb.candidate.service.ICandidateInfoService;
 import cn.sits.rjb.common.data.ResponseData;
 import cn.sits.rjb.common.enums.ResponseCodeEnum;
+import cn.sits.rjb.common.utils.TokenUtil;
+import cn.sits.rjb.system.service.IAuthDataService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author yuhongjie
@@ -26,24 +31,34 @@ public class CandidateController {
     @Autowired
     ICandidateInfoService iCandidateInfoService;
 
-//    获取候选人信息
+    @Autowired
+    IAuthDataService iAuthDataService;
+
+    //    获取候选人信息
+//    @AccessLimit(limit = 1, sec = 10)//10秒内4次
     @RequestMapping(value = "/getCandidateInfoByKeyword", method = {RequestMethod.POST})
-    public ResponseData getCandidateInfoByKeyword(@RequestBody GetCandidateInfoByKeywordRequestDto requestDto){
-        ResponseData response = null;
+    @ApiOperation(value = "关键字查候选人信息", notes = "关键字查候选人信息")
+    public ResponseData getCandidateInfoByKeyword(HttpServletRequest request, @RequestBody GetCandidateInfoByKeywordRequestDto requestDto) {
+        ResponseData responseData = null;
+        // 设置当前登录人ID
         try {
-            if (requestDto != null) {
-                GetCandidateInfoByKeywordVo getCandidateInfoByKeywordVo = iCandidateInfoService.getCandidateInfoByKeyword(requestDto);
-                return new ResponseData(getCandidateInfoByKeywordVo,ResponseCodeEnum.SUCCESS.getCode(),ResponseCodeEnum.SUCCESS.getMsg());
-            } else {
-                logger.error("操作失败！传值为空");
-                response = new ResponseData(ResponseCodeEnum.FAILURE.getCode(),"传值为空");
+            Long userId = TokenUtil.getUserId(request);
+            requestDto.setUserId(userId);
+            // 校验操作权限
+            String[] sourceArr = {"CAND_SHW"};
+            responseData = iAuthDataService.checkOperation(request, requestDto.getOpt(), sourceArr);
+            if (!responseData.getResult().equals(ResponseCodeEnum.SUCCESS.getCode())) {
+                return responseData;
             }
+            GetCandidateInfoByKeywordVo getCandidateInfoByKeywordVo = iCandidateInfoService.getCandidateInfoByKeyword(requestDto);
+            return new ResponseData(getCandidateInfoByKeywordVo, ResponseCodeEnum.SUCCESS.getCode(), ResponseCodeEnum.SUCCESS.getMsg());
         } catch (Exception e) {
             e.printStackTrace();
-            response = new ResponseData(ResponseCodeEnum.FAILURE.getCode(),e.getMessage());
+             responseData = new ResponseData(ResponseCodeEnum.FAILURE.getCode(), e.getMessage());
         }
-        return response;
+        return responseData;
     }
-
-
 }
+
+
+

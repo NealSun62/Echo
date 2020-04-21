@@ -9,6 +9,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 @SpringBootTest
 public class ApplicationTest {
+    private volatile static ApplicationTest applicationTest;
+    private ApplicationTest(){}
+    public static ApplicationTest getApplicationTest(){
+        if(null == applicationTest){
+            synchronized (ApplicationTest.class){
+                if(null == applicationTest){
+                    applicationTest = new ApplicationTest();
+                }
+            }
+        }
+        return applicationTest;
+    }
 //    @Autowired
 //    private static RabbitSender sender;
 
