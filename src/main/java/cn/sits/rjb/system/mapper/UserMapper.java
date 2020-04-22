@@ -9,4 +9,5 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     List<LoginUserResponseDto> findByLoginName(LoginUserResquestDto resquestDto);
+    List findUserByUserId(long userId);
 }

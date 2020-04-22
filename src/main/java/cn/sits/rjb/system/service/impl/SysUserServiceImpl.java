@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,23 +20,33 @@ import java.util.List;
 public class SysUserServiceImpl implements ISysUserService {
     private static final Logger logger = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
-//    @Autowired(required=false)
     @Resource
     UserMapper userMapper;
 
     @Override
-    public List<LoginUserResponseDto> findByLoginName(LoginUserResquestDto resquestDto) throws Exception
-    {
+    public List<LoginUserResponseDto> findByLoginName(LoginUserResquestDto resquestDto) throws Exception {
         if (StringUtils.isNotEmpty(resquestDto.getLoginName())) {
             return userMapper.findByLoginName(resquestDto);
-        }else {
+        } else {
             return null;
         }
     }
 
+    @Override
+    public List findUserByUserId(long userId) throws Exception {
+        List userList = new ArrayList();
+        try {
+            userList = userMapper.findUserByUserId(userId);
+        } catch (Exception e) {
+            logger.error("查不到该userId{}", userId, e);
+        }
+        return userList;
+
+    }
+
     //登录
     @Override
-    public ResponseData login(String userName, String password) throws Exception{
+    public ResponseData login(String userName, String password) throws Exception {
         ResponseData response = null;
 //        // 获取Subject实例对象，用户实例
 //        Subject currentUser = SecurityUtils.getSubject();

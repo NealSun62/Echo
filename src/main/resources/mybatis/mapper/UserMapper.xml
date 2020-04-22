@@ -21,4 +21,13 @@
         </if>
     </select>
 
+    <select id="findUserByUserId" parameterType="long" resultMap="UserResultMapper">
+        SELECT *
+        FROM user_info t1
+        where is_delete = '0'
+        <if test="userId !=null">
+            and t1.user_id = #{userId}
+        </if>
+    </select>
+
 </mapper>

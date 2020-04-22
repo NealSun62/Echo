@@ -11,8 +11,6 @@ import java.util.List;
 public class AuthDataResponseDto {
     // 操作权限集合
     private List<SysAuth> authList;
-    // 匝道ID集合
-    private List<Long> rampIdList;
 
     public List<SysAuth> getAuthList() {
         return authList;
@@ -22,11 +20,4 @@ public class AuthDataResponseDto {
         this.authList = authList;
     }
 
-    public List<Long> getRampIdList() {
-        return rampIdList;
-    }
-
-    public void setRampIdList(List<Long> rampIdList) {
-        this.rampIdList = rampIdList;
-    }
 }

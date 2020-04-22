@@ -9,7 +9,7 @@ package cn.sits.rjb.system.model.dto;
 public class LoginUserResponseDto {
     // token
     private String token;
-    private int userId;
+    private long userId;
     private String userName;
     private String name;
     private String password;
@@ -17,6 +17,15 @@ public class LoginUserResponseDto {
     private String userMail;
     private String userTelephone;
     private String userAddress;
+    private AuthDataResponseDto authDataResponseDto;
+
+    public AuthDataResponseDto getAuthDataResponseDto() {
+        return authDataResponseDto;
+    }
+
+    public void setAuthDataResponseDto(AuthDataResponseDto authDataResponseDto) {
+        this.authDataResponseDto = authDataResponseDto;
+    }
 
     public String getToken() {
         return token;
@@ -26,11 +35,11 @@ public class LoginUserResponseDto {
         this.token = token;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

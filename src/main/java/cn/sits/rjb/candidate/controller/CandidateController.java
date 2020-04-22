@@ -10,12 +10,12 @@ import cn.sits.rjb.system.service.IAuthDataService;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 public class CandidateController {
     private static final Logger logger = LoggerFactory.getLogger(CandidateController.class);
 
-    @Autowired
+    @Resource
     ICandidateInfoService iCandidateInfoService;
 
-    @Autowired
+    @Resource
     IAuthDataService iAuthDataService;
 
     //    获取候选人信息

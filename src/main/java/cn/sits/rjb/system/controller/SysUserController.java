@@ -3,20 +3,23 @@ package cn.sits.rjb.system.controller;
 import cn.sits.rjb.common.data.ResponseData;
 import cn.sits.rjb.common.enums.ResponseCodeEnum;
 import cn.sits.rjb.common.utils.PBKDF2Util;
+import cn.sits.rjb.common.utils.VerifyUtil;
 import cn.sits.rjb.config.authentication.TokenManager;
+import cn.sits.rjb.system.model.dto.AuthDataResponseDto;
 import cn.sits.rjb.system.model.dto.LoginUserResponseDto;
 import cn.sits.rjb.system.model.dto.LoginUserResquestDto;
+import cn.sits.rjb.system.service.IAuthDataService;
 import cn.sits.rjb.system.service.ISysUserService;
 import com.alibaba.druid.util.StringUtils;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -41,6 +44,8 @@ public class SysUserController {
     @Autowired
     private TokenManager tokenManager;
 
+    @Autowired
+    private IAuthDataService iAuthDataService;
     /**
      * 登录
      *
@@ -55,6 +60,14 @@ public class SysUserController {
                     !StringUtils.isEmpty(loginUserResquestDto.getLoginPassword())) {
                 String token = "";
                 String loginPassword = loginUserResquestDto.getLoginPassword();
+                //验证码
+//                String validateCode = loginRequestDto.getValidateCode().toUpperCase();
+//                String validateCodeSession = stringRedisTemplate.opsForValue().get(VerifyUtil.RANDOMCODEKEY+validateCode);
+//                if(validateCodeSession==null||!validateCode.toLowerCase().equals(validateCodeSession.toLowerCase())){
+//                    return new ResponseData(BizCodeEnum.COMMON_ERROR_200.getCode(),BizCodeEnum.COMMON_ERROR_200.getMsg());
+//                }else{
+//                    stringRedisTemplate.delete(VerifyUtil.RANDOMCODEKEY+validateCode);
+//                }
                 List<LoginUserResponseDto> userList = iSysUserService.findByLoginName(loginUserResquestDto);
                 if (userList.isEmpty()) {
                     return new ResponseData(ResponseCodeEnum.FAILURE.getCode(), "查无此人");
@@ -73,10 +86,12 @@ public class SysUserController {
                     if (StringUtils.isEmpty(token)) {
                         return new ResponseData("token生成失败", ResponseCodeEnum.FAILURE.getCode(), ResponseCodeEnum.FAILURE.getMsg());
                     }
+                    AuthDataResponseDto authDataResponseDto = iAuthDataService.getAuthData(loginUserResponseDto.getUserId());
                     loginUserResponseDto.setToken(token);
                     loginUserResponseDto.setUserId(Integer.parseInt(userId));
                     loginUserResponseDto.setPassword("");
                     loginUserResponseDto.setSalt("");
+//                    loginResponseDto.setAuthDataResponseDto(authDataResponseDto);
                     response = new ResponseData(loginUserResponseDto,ResponseCodeEnum.SUCCESS.getCode(), "登入成功");
                 }
             } else{
@@ -90,5 +105,29 @@ public class SysUserController {
         return response;
     }
 
-
+    /**
+     * 进入登录页面并且产生验证码
+     * louis.lu
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getvalidatecode")
+    @ApiOperation(value="验证码", notes="获取验证码")
+    public void getValidateCode(HttpServletRequest request, HttpServletResponse response) {
+        // 进入登录页面  产生  验证码
+        try {
+            response.setCharacterEncoding("utf-8");
+            logger.info("开始生成验证码");
+            response.setContentType("image/png;charset=UTF-8");//设置相应类型,告诉浏览器输出的内容为图片
+            response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expire", 0);
+            VerifyUtil randomValidateCode = new VerifyUtil(stringRedisTemplate);
+            randomValidateCode.getRandcode(request, response);//输出验证码图片
+//			ValidateCodeUtil randomValidateCode1 = new ValidateCodeUtil();
+//			randomValidateCode1.getRandcode(request, response);//输出验证码图片方法
+        } catch (Exception e) {
+            logger.error("获取验证码失败>>>>   ", e);
+        }
+    }
 }
