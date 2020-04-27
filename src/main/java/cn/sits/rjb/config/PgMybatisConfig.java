@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -30,6 +31,13 @@ public class PgMybatisConfig {
 	public DataSource pgDataSource() {
 		return DataSourceBuilder.create().build();
 	}
+    /**
+     * 配置postgre事物管理器
+     */
+    @Bean(name="postgreTransactionManager")
+    public DataSourceTransactionManager postgreTransactionManagerGenerate(@Qualifier("pgDataSource")DataSource dataSource){
+        return new DataSourceTransactionManager(dataSource);
+    }
 
 	@Bean
 	public SqlSessionFactory pgSqlSessionFactory(@Qualifier("pgDataSource") DataSource dataSource) throws Exception {

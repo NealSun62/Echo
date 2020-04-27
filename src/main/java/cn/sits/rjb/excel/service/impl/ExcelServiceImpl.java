@@ -30,7 +30,7 @@ public class ExcelServiceImpl implements IExcelService {
     @Resource
     ExcelMapper excelMapper;
 
-    @Transactional(propagation= Propagation.REQUIRED)
+    @Transactional(propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     @Override
     public int importCandidateListExcel(List<List<Object>> candidateListExcel) throws Exception {
         int result = 0;
@@ -50,10 +50,11 @@ public class ExcelServiceImpl implements IExcelService {
                 result = excelMapper.addCandidateListExcel(candidateLists);
             }
             if (true) {
-                throw new Exception();
+//                throw new Exception();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Exception();
         }
         return result;
     }
