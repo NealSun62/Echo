@@ -49,9 +49,6 @@ public class ExcelServiceImpl implements IExcelService {
             if (candidateLists.size() > 0) {
                 result = excelMapper.addCandidateListExcel(candidateLists);
             }
-            if (true) {
-//                throw new Exception();
-            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception();
